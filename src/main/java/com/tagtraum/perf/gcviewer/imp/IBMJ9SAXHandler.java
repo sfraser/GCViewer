@@ -9,7 +9,6 @@ package com.tagtraum.perf.gcviewer.imp;
 import com.tagtraum.perf.gcviewer.model.AbstractGCEvent;
 import com.tagtraum.perf.gcviewer.model.GCEvent;
 import com.tagtraum.perf.gcviewer.model.GCModel;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -114,14 +113,14 @@ public class IBMJ9SAXHandler extends DefaultHandler {
 			} else if("tenured".equals(qName)){
 				currentTenured++;
 				String freeStr = attrs.getValue("freebytes");
-				int free = -1;
+				long free = -1;
 				if(freeStr != null){
-					free = Integer.parseInt(freeStr);
+					free = Long.parseLong(freeStr);
 				}
 				String totalStr = attrs.getValue("totalbytes");
-				int total = -1;
+				long total = -1;
 				if(totalStr != null){
-					total = Integer.parseInt(totalStr);
+					total = Long.parseLong(totalStr);
 				}
 				
 				// For now only care about Total - don't break into SOA and LOA
@@ -138,14 +137,14 @@ public class IBMJ9SAXHandler extends DefaultHandler {
 				}
 			} else if("soa".equals(qName)){
 				String freeStr = attrs.getValue("freebytes");
-				int free = -1;
+				long free = -1;
 				if(freeStr != null){
-					free = Integer.parseInt(freeStr);
+					free = Long.parseLong(freeStr);
 				}
 				String totalStr = attrs.getValue("totalbytes");
-				int total = -1;
+				long total = -1;
 				if(totalStr != null){
-					total = Integer.parseInt(totalStr);
+					total = Long.parseLong(totalStr);
 				}
 				
 				if(currentTenured == 1){
@@ -161,14 +160,14 @@ public class IBMJ9SAXHandler extends DefaultHandler {
 				}
 			} else if("loa".equals(qName)){
 				String freeStr = attrs.getValue("freebytes");
-				int free = -1;
+				long free = -1;
 				if(freeStr != null){
-					free = Integer.parseInt(freeStr);
+					free = Long.parseLong(freeStr);
 				}
 				String totalStr = attrs.getValue("totalbytes");
-				int total = -1;
+				long total = -1;
 				if(totalStr != null){
-					total = Integer.parseInt(totalStr);
+					total = Long.parseLong(totalStr);
 				}
 				
 				if(currentTenured == 1){
@@ -209,12 +208,12 @@ public class IBMJ9SAXHandler extends DefaultHandler {
 					event.setType(AbstractGCEvent.Type.FULL_GC);
 				}
 				if(currentAF.initialTotalBytes != -1 && currentAF.initialFreeBytes != -1){
-					int preUsed = currentAF.initialTotalBytes - currentAF.initialFreeBytes;
+					long preUsed = currentAF.initialTotalBytes - currentAF.initialFreeBytes;
 					event.setPreUsed(preUsed);
 				}
 
 				if(currentAF.afterTotalBytes != -1 && currentAF.afterFreeBytes != -1){
-					int postUsed = currentAF.afterTotalBytes - currentAF.afterFreeBytes;
+					long postUsed = currentAF.afterTotalBytes - currentAF.afterFreeBytes;
 					event.setPostUsed(postUsed);
 				}
 				
@@ -230,8 +229,8 @@ public class IBMJ9SAXHandler extends DefaultHandler {
                 }
                 
                 if(currentAF.afterSOATotalBytes != -1 && currentAF.afterSOAFreeBytes != -1 && currentAF.initialSOAFreeBytes  != -1 && currentAF.initialSOATotalBytes != -1){
-                	int preUsed = currentAF.initialSOATotalBytes - currentAF.initialSOAFreeBytes;
-                	int postUsed = currentAF.afterSOATotalBytes - currentAF.afterSOAFreeBytes;
+                	long preUsed = currentAF.initialSOATotalBytes - currentAF.initialSOAFreeBytes;
+                	long postUsed = currentAF.afterSOATotalBytes - currentAF.afterSOAFreeBytes;
                 	final GCEvent detailEvent = new GCEvent();
                 	detailEvent.setTimestamp(currentAF.elapsedTime);
                 	detailEvent.setType(AbstractGCEvent.Type.PS_YOUNG_GEN);
@@ -243,8 +242,8 @@ public class IBMJ9SAXHandler extends DefaultHandler {
                 }
 
                 if(currentAF.afterLOATotalBytes != -1 && currentAF.afterLOAFreeBytes != -1 && currentAF.initialLOAFreeBytes  != -1 && currentAF.initialLOATotalBytes != -1){
-                	int preUsed = currentAF.initialLOATotalBytes - currentAF.initialLOAFreeBytes;
-                	int postUsed = currentAF.afterLOATotalBytes - currentAF.afterLOAFreeBytes;
+                	long preUsed = currentAF.initialLOATotalBytes - currentAF.initialLOAFreeBytes;
+                	long postUsed = currentAF.afterLOATotalBytes - currentAF.afterLOAFreeBytes;
                 	final GCEvent detailEvent = new GCEvent();
                 	detailEvent.setTimestamp(currentAF.elapsedTime);
                 	detailEvent.setType(AbstractGCEvent.Type.PS_OLD_GEN);
@@ -282,18 +281,18 @@ class AF{
 	double intervalms=-1;
 	int minRequestedBytes=-1;
 	double timeExclusiveAccessMs=-1;
-	int initialFreeBytes = -1;
-	int initialTotalBytes = -1;
-	int initialSOAFreeBytes = -1;
-	int initialSOATotalBytes = -1;
-	int initialLOAFreeBytes = -1;
-	int initialLOATotalBytes = -1;	
-	int afterFreeBytes = -1;
-	int afterTotalBytes = -1;
-	int afterSOAFreeBytes = -1;
-	int afterSOATotalBytes = -1;
-	int afterLOAFreeBytes = -1;
-	int afterLOATotalBytes = -1;
+	long initialFreeBytes = -1;
+	long initialTotalBytes = -1;
+    long initialSOAFreeBytes = -1;
+    long initialSOATotalBytes = -1;
+    long initialLOAFreeBytes = -1;
+    long initialLOATotalBytes = -1;
+    long afterFreeBytes = -1;
+    long afterTotalBytes = -1;
+    long afterSOAFreeBytes = -1;
+    long afterSOATotalBytes = -1;
+    long afterLOAFreeBytes = -1;
+    long afterLOATotalBytes = -1;
 	String gcType;
 	double gcIntervalms=-1;
 	int gcSoftRefsCleared = -1;

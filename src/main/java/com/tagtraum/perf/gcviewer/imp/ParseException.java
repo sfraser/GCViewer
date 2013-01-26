@@ -1,8 +1,8 @@
 package com.tagtraum.perf.gcviewer.imp;
 
-import java.io.IOException;
-
 import com.tagtraum.perf.gcviewer.util.ParsePosition;
+
+import java.io.IOException;
 
 /**
  * Is thrown whenever a ParseError occurs.
@@ -12,6 +12,7 @@ import com.tagtraum.perf.gcviewer.util.ParsePosition;
  * @author <a href="mailto:hs@tagtraum.com">Hendrik Schreiber</a>
  * @version $Id: $
  */
+// @todo when I edit direct it works, but files pasted from old tree cause whole file diff (whitelspace at eol)
 public class ParseException extends IOException {
     private String line;
     private ParsePosition parsePosition;

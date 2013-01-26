@@ -1,7 +1,7 @@
 package com.tagtraum.perf.gcviewer.util;
 
-import java.text.NumberFormat;
 import java.text.FieldPosition;
+import java.text.NumberFormat;
 import java.text.ParsePosition;
 
 /**
@@ -19,6 +19,9 @@ public class MemoryFormat extends NumberFormat {
 	protected static final long TEN_KB = ONE_KB * 10l;
 	protected static final long ONE_MB = 1024l * ONE_KB;
 	protected static final long TEN_MB = ONE_MB * 10;
+    protected static final long ONE_GB = 1024l * ONE_MB;
+    protected static final long TEN_GB = ONE_GB * 10;
+
     protected NumberFormat format = NumberFormat.getInstance();
 
     public MemoryFormat() {
@@ -31,7 +34,11 @@ public class MemoryFormat extends NumberFormat {
 
     public StringBuffer format(double memInK, StringBuffer toAppendTo, FieldPosition pos) {
         final double bytes = memInK * ONE_KB;
-        if (bytes >= TEN_MB) {
+        if (bytes >= TEN_GB) {
+            format.format(bytes / ONE_GB, toAppendTo, pos);
+            toAppendTo.append('G');
+        }
+        else if (bytes >= TEN_MB) {
             format.format(bytes / ONE_MB, toAppendTo, pos);
             toAppendTo.append('M');
         }
@@ -51,7 +58,11 @@ public class MemoryFormat extends NumberFormat {
 
     public StringBuffer format(long memInK, StringBuffer toAppendTo, FieldPosition pos) {
         final double bytes = memInK * ONE_KB;
-        if (bytes >= TEN_MB) {
+        if (bytes >= TEN_GB) {
+            format.format(bytes / ONE_GB, toAppendTo, pos);
+            toAppendTo.append('G');
+        }
+        else if (bytes >= TEN_MB) {
             format.format(bytes / ONE_MB, toAppendTo, pos);
             toAppendTo.append('M');
         }
@@ -93,7 +104,13 @@ public class MemoryFormat extends NumberFormat {
         format.setMinimumFractionDigits(format.getMinimumFractionDigits());
         
         final double bytes = memInK * ONE_KB;
-        if (bytes >= TEN_MB) {
+        if (bytes >= TEN_GB) {
+        	format.format(bytes / ONE_GB, toAppendTo, pos);
+            units = 'G';
+            if(bAppendUnits)
+            	toAppendTo.append(units);
+        }
+        else if (bytes >= TEN_MB) {
         	format.format(bytes / ONE_MB, toAppendTo, pos);
             units = 'M';
             if(bAppendUnits)

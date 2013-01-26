@@ -1,14 +1,12 @@
 package com.tagtraum.perf.gcviewer.renderer;
 
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Polygon;
-import java.util.Iterator;
-
 import com.tagtraum.perf.gcviewer.ModelChart;
 import com.tagtraum.perf.gcviewer.ModelChartImpl;
 import com.tagtraum.perf.gcviewer.model.GCEvent;
 import com.tagtraum.perf.gcviewer.model.GCModel;
+
+import java.awt.*;
+import java.util.Iterator;
 
 /**
  * UsedYoungRenderer draws a line to indicate the current usage of the young generation. The line
@@ -35,8 +33,8 @@ public class UsedYoungRenderer extends PolygonChartRenderer {
         for (Iterator<GCEvent> i = model.getGCEvents(); i.hasNext();) {
             GCEvent event = i.next();
             GCEvent youngEvent = event.getYoung();
-            int lastTenuredTotal = 0;
-            int tenuredTotal = 0;
+            long lastTenuredTotal = 0;
+            long tenuredTotal = 0;
             if (youngEvent != null) {
                 // event contains information about generation (only with -XX:+PrintGCDetails)
                 if (modelChart.isShowTenured()) {

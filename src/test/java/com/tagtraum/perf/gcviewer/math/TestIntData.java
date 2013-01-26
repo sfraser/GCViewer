@@ -17,19 +17,19 @@ public class TestIntData extends TestCase {
     }
 
     public void testSimpleAverage() throws Exception {
-        IntData intData = new IntData();
-        intData.add(1);
-        intData.add(2);
-        assertEquals("Simple average", 1.5, intData.average(), 0.0);
+        LongData longData = new LongData();
+        longData.add(1);
+        longData.add(2);
+        assertEquals("Simple average", 1.5, longData.average(), 0.0);
     }
 
     public void testSimpleStandardDeviation() throws Exception {
-        IntData intData = new IntData();
-        intData.add(1);
-        intData.add(1);
-        intData.add(-1);
-        intData.add(-1);
-        assertEquals("Simple std deviation", 1.1547005383792515, intData.standardDeviation(), 0.0000001);
+        LongData longData = new LongData();
+        longData.add(1);
+        longData.add(1);
+        longData.add(-1);
+        longData.add(-1);
+        assertEquals("Simple std deviation", 1.1547005383792515, longData.standardDeviation(), 0.0000001);
     }
 
     public static TestSuite suite() {

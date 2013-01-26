@@ -1,5 +1,10 @@
 package com.tagtraum.perf.gcviewer.model;
 
+import com.tagtraum.perf.gcviewer.math.DoubleData;
+import com.tagtraum.perf.gcviewer.math.LongData;
+import com.tagtraum.perf.gcviewer.math.RegressionLine;
+import com.tagtraum.perf.gcviewer.model.AbstractGCEvent.Generation;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,19 +12,9 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.tagtraum.perf.gcviewer.math.DoubleData;
-import com.tagtraum.perf.gcviewer.math.IntData;
-import com.tagtraum.perf.gcviewer.math.RegressionLine;
-import com.tagtraum.perf.gcviewer.model.AbstractGCEvent.Generation;
 
 /**
  * Collection of GCEvents.
@@ -49,16 +44,16 @@ public class GCModel implements Serializable {
     private Map<String, DoubleData> gcEventPauses; // pause information about all stw events for detailed output
     private Map<String, DoubleData> concurrentGcEventPauses; // pause information about all concurrent events
     
-    private IntData heapAllocatedSizes; // allocated heap size of every event
-    private IntData tenuredAllocatedSizes; // allocated tenured size of every event that has this information
-    private IntData youngAllocatedSizes; // allocated young size of every event that has this information
-    private IntData permAllocatedSizes; // allocated perm size of every event that has this information
-    private IntData heapUsedSizes; // used heap of every event
-    private IntData tenuredUsedSizes; // used tenured size of every event that has this information
-    private IntData youngUsedSizes; // used young size of every event that has this information
-    private IntData permUsedSizes; // used perm size of every event that has this information
+    private LongData heapAllocatedSizes; // allocated heap size of every event
+    private LongData tenuredAllocatedSizes; // allocated tenured size of every event that has this information
+    private LongData youngAllocatedSizes; // allocated young size of every event that has this information
+    private LongData permAllocatedSizes; // allocated perm size of every event that has this information
+    private LongData heapUsedSizes; // used heap of every event
+    private LongData tenuredUsedSizes; // used tenured size of every event that has this information
+    private LongData youngUsedSizes; // used young size of every event that has this information
+    private LongData permUsedSizes; // used perm size of every event that has this information
     
-    private IntData promotion; // promotion from young to tenured generation during young collections
+    private LongData promotion; // promotion from young to tenured generation during young collections
     
     private long footprint;
     private double firstPauseTimeStamp = Double.MAX_VALUE;
@@ -71,10 +66,10 @@ public class GCModel implements Serializable {
     private DoubleData initiatingOccupancyFraction; // all concurrent collectors; start of concurrent collection
     private long freedMemory;
     private Format format;
-    private IntData postGCUsedMemory;
-    private IntData postFullGCUsedMemory;
-    private IntData freedMemoryByGC;
-    private IntData freedMemoryByFullGC;
+    private LongData postGCUsedMemory;
+    private LongData postFullGCUsedMemory;
+    private LongData freedMemoryByGC;
+    private LongData freedMemoryByFullGC;
     private DoubleData postGCSlope;
     private RegressionLine currentPostGCSlope;
     private RegressionLine currentRelativePostGCIncrease;
@@ -96,10 +91,10 @@ public class GCModel implements Serializable {
         this.currentPostGCSlope = new RegressionLine();
         this.postFullGCSlope = new RegressionLine();
         this.postGCSlope = new DoubleData();
-        this.freedMemoryByGC = new IntData();
-        this.freedMemoryByFullGC = new IntData();
-        this.postFullGCUsedMemory = new IntData();
-        this.postGCUsedMemory = new IntData();
+        this.freedMemoryByGC = new LongData();
+        this.freedMemoryByFullGC = new LongData();
+        this.postFullGCUsedMemory = new LongData();
+        this.postGCUsedMemory = new LongData();
         this.totalPause = new DoubleData();
         this.fullGCPause = new DoubleData();
         this.gcPause = new DoubleData();
@@ -113,17 +108,17 @@ public class GCModel implements Serializable {
         this.gcEventPauses = new TreeMap<String, DoubleData>();
         this.concurrentGcEventPauses = new TreeMap<String, DoubleData>();
         
-        this.heapAllocatedSizes = new IntData();
-        this.permAllocatedSizes = new IntData();
-        this.tenuredAllocatedSizes = new IntData();
-        this.youngAllocatedSizes = new IntData();
+        this.heapAllocatedSizes = new LongData();
+        this.permAllocatedSizes = new LongData();
+        this.tenuredAllocatedSizes = new LongData();
+        this.youngAllocatedSizes = new LongData();
 
-        this.heapUsedSizes = new IntData();
-        this.permUsedSizes = new IntData();
-        this.tenuredUsedSizes = new IntData();
-        this.youngUsedSizes = new IntData();
+        this.heapUsedSizes = new LongData();
+        this.permUsedSizes = new LongData();
+        this.tenuredUsedSizes = new LongData();
+        this.youngUsedSizes = new LongData();
         
-        this.promotion = new IntData();
+        this.promotion = new LongData();
     }
 
     public boolean isCountTenuredAsFull() {
@@ -144,7 +139,7 @@ public class GCModel implements Serializable {
     	}
     }
     
-    private void printIntData(String name, IntData data) {
+    private void printLongData(String name, LongData data) {
         try {
             System.out.println(name + " (n, avg, stddev, min, max):\t" + data.getN() + "\t" + data.average() + "\t" + data.standardDeviation() + "\t" + data.getMin() + "\t" + data.getMax());
         } catch (IllegalStateException e) {
@@ -167,11 +162,12 @@ public class GCModel implements Serializable {
     	printPauseMap(concurrentGcEventPauses);
 
     	printDoubleData("initiatingOccupancyFraction", initiatingOccupancyFraction);
-    	
-        printIntData("heap size used", heapUsedSizes);
-        printIntData("perm size used", permUsedSizes);
-        printIntData("tenured size used", tenuredUsedSizes);
-        printIntData("young size used", youngUsedSizes);
+
+        // @todo change to long
+        printLongData("heap size used", heapUsedSizes);
+        printLongData("perm size used", permUsedSizes);
+        printLongData("tenured size used", tenuredUsedSizes);
+        printLongData("young size used", youngUsedSizes);
     }
     
     public void setURL(final URL url) {
@@ -384,7 +380,7 @@ public class GCModel implements Serializable {
                 
                 fullGCEvents.add(event);
                 postFullGCUsedMemory.add(event.getPostUsed());
-                final int freed = event.getPreUsed() - event.getPostUsed();
+                final long freed = event.getPreUsed() - event.getPostUsed();
                 freedMemoryByFullGC.add(freed);
                 fullGCPause.add(event.getPause());
                 postFullGCSlope.addPoint(event.getTimestamp(), event.getPostUsed());
@@ -567,7 +563,7 @@ public class GCModel implements Serializable {
         return postGCSlope.average();
     }
 
-    public IntData getPostGCUsedMemory() {
+    public LongData getPostGCUsedMemory() {
         return postGCUsedMemory;
     }
 
@@ -579,35 +575,35 @@ public class GCModel implements Serializable {
         return postFullGCSlope;
     }
 
-    public IntData getPostFullGCUsedMemory() {
+    public LongData getPostFullGCUsedMemory() {
         return postFullGCUsedMemory;
     }
 
     /**
      * Heap memory freed by a (small) garbage collection.
      */
-    public IntData getFreedMemoryByGC() {
+    public LongData getFreedMemoryByGC() {
         return freedMemoryByGC;
     }
 
     /**
      * Heap memory freed by a <em>full</em> garbage collection.
      */
-    public IntData getFreedMemoryByFullGC() {
+    public LongData getFreedMemoryByFullGC() {
         return freedMemoryByFullGC;
     }
 
     /**
      * Heap memory consumption after a (small) garbage collection.
      */
-    public IntData getFootprintAfterGC() {
+    public LongData getFootprintAfterGC() {
         return postGCUsedMemory;
     }
 
     /**
      * Heap memory consumption after a <em>full</em> garbage collection.
      */
-    public IntData getFootprintAfterFullGC() {
+    public LongData getFootprintAfterFullGC() {
         return postFullGCUsedMemory;
     }
 
@@ -640,14 +636,14 @@ public class GCModel implements Serializable {
     /**
      * max heap allocated for every event
      */
-    public IntData getHeapAllocatedSizes() {
+    public LongData getHeapAllocatedSizes() {
         return heapAllocatedSizes;
     }
     
     /**
      * max heap used for every event
      */
-    public IntData getHeapUsedSizes() {
+    public LongData getHeapUsedSizes() {
         return heapUsedSizes;
     }
 
@@ -655,42 +651,42 @@ public class GCModel implements Serializable {
      * perm sizes allocated for every event that contained one (only if detailed logging is active and
      * and all spaces were collected) 
      */
-    public IntData getPermAllocatedSizes() {
+    public LongData getPermAllocatedSizes() {
         return permAllocatedSizes;
     }
     
     /**
      * perm sizes used for every event that has the information 
      */
-    public IntData getPermUsedSizes() {
+    public LongData getPermUsedSizes() {
         return permUsedSizes;
     }
     
     /**
      * tenured sizes allocated for every event that contained one (only if detailed logging is active) 
      */
-    public IntData getTenuredAllocatedSizes() {
+    public LongData getTenuredAllocatedSizes() {
         return tenuredAllocatedSizes;
     }
     
     /**
      * tenured sizes used for every event that contained one (only if detailed logging is active) 
      */
-    public IntData getTenuredUsedSizes() {
+    public LongData getTenuredUsedSizes() {
         return tenuredUsedSizes;
     }
     
     /**
      * young sizes allocated for every event that contained one (only if detailed logging is active) 
      */
-    public IntData getYoungAllocatedSizes() {
+    public LongData getYoungAllocatedSizes() {
         return youngAllocatedSizes;
     }
     
     /**
      * young sizes used for every event that contained one (only if detailed logging is active) 
      */
-    public IntData getYoungUsedSizes() {
+    public LongData getYoungUsedSizes() {
         return youngUsedSizes;
     }
     
@@ -698,7 +694,7 @@ public class GCModel implements Serializable {
      * Returns promotion information for all young collections (how much memory was promoted to
      * tenured space per young collection?)
      */
-    public IntData getPromotion() {
+    public LongData getPromotion() {
         return promotion;
     }
     

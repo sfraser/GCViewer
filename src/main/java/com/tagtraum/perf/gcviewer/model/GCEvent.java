@@ -16,13 +16,13 @@ import java.util.TreeMap;
 public class GCEvent extends AbstractGCEvent<GCEvent> {
 
     /** Used before GC in KB */
-    private int preUsed;
+    private long preUsed;
     
     /** Used after GC in KB */
-    private int postUsed;
+    private long postUsed;
     
     /** Capacity in KB */
-    private int total;
+    private long total;
     
     /** Pause in seconds */
     private double pause;
@@ -33,7 +33,7 @@ public class GCEvent extends AbstractGCEvent<GCEvent> {
     public GCEvent() {
     }
 
-    public GCEvent(double timestamp, int preUsed, int postUsed, int total, double pause, Type type) {
+    public GCEvent(double timestamp, long preUsed, long postUsed, long total, double pause, Type type) {
         this.setTimestamp(timestamp);
         this.preUsed = preUsed;
         this.postUsed = postUsed;
@@ -111,27 +111,27 @@ public class GCEvent extends AbstractGCEvent<GCEvent> {
         return generationMap.get(Generation.PERM);
     }
     
-    public void setPreUsed(int preUsed) {
+    public void setPreUsed(long preUsed) {
         this.preUsed = preUsed;
     }
 
-    public void setPostUsed(int postUsed) {
+    public void setPostUsed(long postUsed) {
         this.postUsed = postUsed;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 
-    public int getPreUsed() {
+    public long getPreUsed() {
         return preUsed;
     }
 
-    public int getPostUsed() {
+    public long getPostUsed() {
         return postUsed;
     }
 
-    public int getTotal() {
+    public long getTotal() {
         return total;
     }
 
